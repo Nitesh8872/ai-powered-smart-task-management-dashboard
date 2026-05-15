@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDesk</title>
+    <script>
+        const targetPage = localStorage.getItem("token") ? "dashboard.html" : "login.html";
+        window.location.replace(targetPage);
+    </script>
+</head>
+<body>
+    <noscript>
+        <p>Please enable JavaScript to use SmartDesk.</p>
+        <p><a href="login.html">Go to login</a></p>
+    </noscript>
+</body>
+</html>
