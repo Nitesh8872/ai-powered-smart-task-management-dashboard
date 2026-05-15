@@ -64,36 +64,6 @@
         </div>
     </div>
 
-    <script src="env.js"></script>
-    <script type="module">
-        import { login } from './src/auth.js';
-
-        document.getElementById('loginBtn').addEventListener('click', login);
-        
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') login();
-            });
-        });
-
-        window.onload = () => {
-            const rememberedEmail = localStorage.getItem('rememberedEmail');
-            if (rememberedEmail) {
-                document.getElementById('email').value = rememberedEmail;
-                document.getElementById('rememberMe').checked = true;
-            }
-        };
-
-        window.togglePassword = function(id, icon) {
-            const input = document.getElementById(id);
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.replace('fa-eye', 'fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.replace('fa-eye-slash', 'fa-eye');
-            }
-        };
-    </script>
+    <script type="module" src="/src/pages/loginPage.js"></script>
 </body>
 </html>
