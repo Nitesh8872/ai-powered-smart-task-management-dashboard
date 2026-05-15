@@ -3,8 +3,8 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://smart-task-dashboard-api.onrender.com/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://smart-task-dashboard-api.onrender.com/api/:path*"
     }
   ],
   "headers": [
