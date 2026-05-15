@@ -33,7 +33,7 @@
                 <label>Email Address</label>
                 <div style="position: relative;">
                     <i class="fa-solid fa-envelope" style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
-                    <input type="email" id="email" placeholder="name@university.edu" style="padding-left: 50px; width: 100%;" onkeypress="handleLoginEnter(event)">
+                    <input type="email" id="email" placeholder="name@university.edu" style="padding-left: 50px; width: 100%;">
                 </div>
             </div>
 
@@ -41,9 +41,10 @@
                 <label>Password</label>
                 <div style="position: relative;">
                     <i class="fa-solid fa-lock" style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
-                    <input type="password" id="password" placeholder="••••••••" style="padding-left: 50px; width: 100%;" onkeypress="handleLoginEnter(event)">
+                    <input type="password" id="password" placeholder="••••••••" style="padding-left: 50px; width: 100%;">
                     <i class="fa-solid fa-eye" style="position: absolute; right: 18px; top: 18px; cursor: pointer; color: #94a3b8;" onclick="togglePassword('password', this)"></i>
                 </div>
+                <small id="passwordError" class="error-text" style="display: block; color: #ef4444; margin-top: 8px; min-height: 16px;"></small>
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">

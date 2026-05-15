@@ -36,8 +36,7 @@
                 <label>Full Name</label>
                 <div style="position: relative;">
                     <i class="fa-solid fa-user" style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
-                    <input type="text" id="name" placeholder="John Doe" style="padding-left: 50px; width: 100%;"
-                        onkeypress="handleRegisterEnter(event)">
+                    <input type="text" id="name" placeholder="John Doe" style="padding-left: 50px; width: 100%;">
                 </div>
             </div>
 
@@ -47,16 +46,16 @@
                     <i class="fa-solid fa-envelope"
                         style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
                     <input type="email" id="email" placeholder="john@university.edu"
-                        style="padding-left: 50px; width: 100%;" onkeypress="handleRegisterEnter(event)">
+                        style="padding-left: 50px; width: 100%;">
                 </div>
+                <small id="emailError" class="error-text" style="display: block; color: #ef4444; margin-top: 8px; min-height: 16px;"></small>
             </div>
 
             <div class="input-group" style="margin-bottom: 15px;">
                 <label>Password</label>
                 <div style="position: relative;">
                     <i class="fa-solid fa-lock" style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
-                    <input type="password" id="password" placeholder="••••••••" style="padding-left: 50px; width: 100%;"
-                        oninput="checkStrength()" onkeypress="handleRegisterEnter(event)">
+                    <input type="password" id="password" placeholder="••••••••" style="padding-left: 50px; width: 100%;">
                     <i class="fa-solid fa-eye"
                         style="position: absolute; right: 18px; top: 18px; cursor: pointer; color: #94a3b8;"
                         onclick="togglePassword('password', this)"></i>
@@ -78,8 +77,9 @@
                 <div style="position: relative;">
                     <i class="fa-solid fa-lock" style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
                     <input type="password" id="confirmPassword" placeholder="••••••••"
-                        style="padding-left: 50px; width: 100%;" onkeypress="handleRegisterEnter(event)">
+                        style="padding-left: 50px; width: 100%;">
                 </div>
+                <small id="confirmError" class="error-text" style="display: block; color: #ef4444; margin-top: 8px; min-height: 16px;"></small>
             </div>
 
             <button class="btn-primary" id="registerBtn"
