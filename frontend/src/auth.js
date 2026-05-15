@@ -15,7 +15,7 @@ export async function login() {
 
     try {
         setButtonLoading(loginBtn, true, "Signing in...");
-        const { ok, data } = await userService.login(email, password);
+        const { ok, status, data } = await userService.login(email, password);
         
         if (ok) {
             if (document.getElementById("rememberMe")?.checked) {
@@ -25,10 +25,11 @@ export async function login() {
             }
             window.location.href = "dashboard.html";
         } else {
-            showError("passwordError", data.message || data.error || "Login failed. Check your email and password.");
+            showError("passwordError", getErrorMessage(data, status, "Login failed. Check your email and password."));
         }
     } catch (error) {
-        showError("passwordError", "Unable to reach the server. Please try again in a moment.");
+        console.error("Login request failed:", error);
+        showError("passwordError", error.message || "Unable to reach the server. Please try again in a moment.");
     } finally {
         setButtonLoading(loginBtn, false, "Sign In");
     }
@@ -55,15 +56,16 @@ export async function register() {
 
     try {
         setButtonLoading(registerBtn, true, "Creating account...");
-        const { ok, data } = await userService.register(name, email, password);
+        const { ok, status, data } = await userService.register(name, email, password);
         
         if (ok) {
             window.location.href = "login.html";
         } else {
-            showError("emailError", data.message || data.error || data.errors?.[0]?.msg || "Registration failed");
+            showError("emailError", getErrorMessage(data, status, "Registration failed"));
         }
     } catch (error) {
-        showError("emailError", "Unable to reach the server. Please try again in a moment.");
+        console.error("Register request failed:", error);
+        showError("emailError", error.message || "Unable to reach the server. Please try again in a moment.");
     } finally {
         setButtonLoading(registerBtn, false, "Create Account");
     }
@@ -73,6 +75,11 @@ function setButtonLoading(button, isLoading, text) {
     if (!button) return;
     button.disabled = isLoading;
     button.innerText = text;
+}
+
+function getErrorMessage(data, status, fallback) {
+    const message = data?.message || data?.error || data?.errors?.[0]?.msg || fallback;
+    return status ? `${message} (Status ${status})` : message;
 }
 
 // Attach to window for legacy HTML onclicks (temporary bridge)

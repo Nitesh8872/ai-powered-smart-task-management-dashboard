@@ -40,7 +40,9 @@ app.use(
                 return callback(null, true);
             }
 
-            return callback(new Error("Not allowed by CORS"));
+            const corsError = new Error(`CORS origin not allowed: ${origin}`);
+            corsError.statusCode = 403;
+            return callback(corsError);
         },
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"]

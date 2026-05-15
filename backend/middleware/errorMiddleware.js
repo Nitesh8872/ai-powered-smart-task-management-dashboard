@@ -26,6 +26,10 @@ const errorHandler = (err, req, res, next) => {
         error = new ErrorResponse(message, 400);
     }
 
+    if (err.message && err.message.startsWith("CORS origin not allowed")) {
+        error = new ErrorResponse(err.message, 403);
+    }
+
     const statusCode = error.statusCode || 500;
     const isProduction = process.env.NODE_ENV === "production";
 

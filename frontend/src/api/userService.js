@@ -13,7 +13,7 @@ export const userService = {
             storage.setTokens(data.token, data.refreshToken);
             storage.set("email", email);
         }
-        return { ok: res.ok, data };
+        return { ok: res.ok, status: res.status, data };
     },
 
     register: async (name, email, password) => {
@@ -23,7 +23,7 @@ export const userService = {
             body: JSON.stringify({ name, email, password })
         });
         const data = await parseJson(res);
-        return { ok: res.ok, data };
+        return { ok: res.ok, status: res.status, data };
     },
 
     logout: () => {
