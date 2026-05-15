@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDesk - Sign In</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Global Style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+    
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div id="toast-container"></div>
+
+    <div class="auth-card">
+        <div class="auth-brand">
+            <i class="fa-solid fa-cube"></i>
+            <span>SmartDesk</span>
+        </div>
+
+        <h2>Welcome Back</h2>
+        <p>Please enter your credentials to continue.</p>
+
+        <div class="auth-form">
+            <div class="input-group" style="margin-bottom: 25px;">
+                <label>Email Address</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-envelope" style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
+                    <input type="email" id="email" placeholder="name@university.edu" style="padding-left: 50px; width: 100%;" onkeypress="handleLoginEnter(event)">
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Password</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-lock" style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
+                    <input type="password" id="password" placeholder="••••••••" style="padding-left: 50px; width: 100%;" onkeypress="handleLoginEnter(event)">
+                    <i class="fa-solid fa-eye" style="position: absolute; right: 18px; top: 18px; cursor: pointer; color: #94a3b8;" onclick="togglePassword('password', this)"></i>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #64748b;">
+                    <input type="checkbox" id="rememberMe"> Remember me
+                </label>
+                <a href="#" style="font-size: 13px; color: var(--primary-color); font-weight: 700; text-decoration: none;">Forgot Password?</a>
+            </div>
+
+            <button class="btn-primary" id="loginBtn" style="width: 100%; padding: 16px; font-size: 15px; font-weight: 800; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);">
+                Sign In
+            </button>
+        </div>
+
+        <div class="auth-footer">
+            Don't have an account? <a href="register.html">Create account</a>
+        </div>
+    </div>
+
+    <script src="env.js"></script>
+    <script type="module">
+        import { login } from './src/auth.js';
+
+        document.getElementById('loginBtn').addEventListener('click', login);
+        
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') login();
+            });
+        });
+
+        window.onload = () => {
+            const rememberedEmail = localStorage.getItem('rememberedEmail');
+            if (rememberedEmail) {
+                document.getElementById('email').value = rememberedEmail;
+                document.getElementById('rememberMe').checked = true;
+            }
+        };
+
+        window.togglePassword = function(id, icon) {
+            const input = document.getElementById(id);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        };
+    </script>
+</body>
+</html>

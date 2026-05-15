@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Enterprise Dashboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="theme-indigo">
+    <!-- CONFETTI CANVAS -->
+    <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"></canvas>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div style="flex: 1;">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-layer-group"></i>
+                <h3>SmartDesk</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="javascript:void(0)" class="active" id="nav-dashboard"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                <li><a href="javascript:void(0)" id="nav-tasks"><i class="fa-solid fa-list-check"></i> All Tasks</a></li>
+                <li><a href="javascript:void(0)" id="nav-analytics"><i class="fa-solid fa-chart-pie"></i> Analytics</a></li>
+                <li><a href="javascript:void(0)" id="nav-calendar"><i class="fa-solid fa-calendar-days"></i> Calendar</a></li>
+                <li><a href="javascript:void(0)" id="nav-ailab"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Lab <span class="badge-new">New</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <button class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <!-- TOP HEADER -->
+        <div class="top-header glass">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button class="menu-toggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h2 id="view-title">Dashboard Overview</h2>
+            </div>
+            <div class="header-actions">
+                <!-- Theme Picker -->
+                <div class="theme-picker">
+                    <div class="theme-dot indigo" title="Indigo"></div>
+                    <div class="theme-dot emerald" title="Emerald"></div>
+                    <div class="theme-dot rose" title="Rose"></div>
+                    <div class="theme-dot amber" title="Amber"></div>
+                </div>
+
+                <button class="icon-btn" aria-label="Toggle Dark Mode">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <div class="user-profile" title="Profile Settings">
+                    <div class="avatar"><i class="fa-solid fa-user"></i></div>
+                    <span id="userEmail">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: DASHBOARD -->
+        <div id="view-dashboard" class="content-view">
+            
+            <!-- AI INSIGHTS PANEL -->
+            <div class="ai-card glass" id="ai-insights-panel" style="margin-bottom: 25px; cursor: pointer;">
+                <div class="ai-header">
+                    <div class="ai-icon">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>AI Productivity Assistant</h3>
+                            <span style="font-size: 11px; color: var(--primary-color); font-weight: 600;">View Details <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                        <p id="ai-suggestion-text">Analyzing your schedule to optimize your day...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATS GRID -->
+            <div class="dashboard-grid">
+                <div class="stat-card glass">
+                    <div class="stat-icon icon-blue"><i class="fa-solid fa-list-ol"></i></div>
+                    <div class="stat-info">
+                        <h4>Total Tasks</h4>
+                        <h2 id="totalTasks">0</h2>
+                    </div>
+                </div>
+                <div class="stat-card glass">
+                    <div class="stat-icon icon-green"><i class="fa-solid fa-check-double"></i></div>
+                    <div class="stat-info">
+                        <h4>Completed</h4>
+                        <h2 id="completedTasks">0</h2>
+                    </div>
+                </div>
+                <div class="stat-card glass">
+                    <div class="stat-icon icon-orange"><i class="fa-solid fa-hourglass-half"></i></div>
+                    <div class="stat-info">
+                        <h4>Pending</h4>
+                        <h2 id="pendingTasks">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MIDDLE SECTION (CHARTS) -->
+            <div class="middle-section">
+                <div class="card-container glass">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-chart-pie"></i> Priority Breakdown</span>
+                    </div>
+                    <div style="height: 250px; display: flex; justify-content: center; align-items: center;">
+                        <canvas id="taskChart"></canvas>
+                    </div>
+                </div>
+                <div class="card-container glass">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-chart-line"></i> Weekly Velocity</span>
+                    </div>
+                    <div style="height: 250px; display: flex; justify-content: center; align-items: center;">
+                        <canvas id="velocityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TASK QUICK VIEW -->
+            <div class="card-container glass">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-tasks"></i> Recent Tasks</span>
+                    <button class="btn-outline">View All</button>
+                </div>
+                <div id="recentTaskContainer"></div>
+            </div>
+        </div>
+
+        <!-- VIEW: ALL TASKS -->
+        <div id="view-tasks" class="content-view hidden-view">
+            <div class="card-container glass">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-tasks"></i> Task Management</span>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-outline"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+                    </div>
+                </div>
+
+                <div class="task-form-grid">
+                    <div class="input-group">
+                        <label>Task Title</label>
+                        <input id="title" type="text" placeholder="What needs to be done?">
+                    </div>
+                    <div class="input-group">
+                        <label>Deadline</label>
+                        <input id="deadline" type="date">
+                    </div>
+                    <div class="input-group">
+                        <label>Priority</label>
+                        <select id="priority">
+                            <option value="High">High</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Category</label>
+                        <select id="category">
+                            <option value="Homework">Homework</option>
+                            <option value="Exams">Exams</option>
+                            <option value="Project">Project</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Other" selected>Other</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> Add Task
+                    </button>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <div class="input-group" style="flex: 1; min-width: 250px;">
+                        <input type="text" id="searchTask" placeholder="Search tasks..." style="border-radius: 30px; padding-left: 20px;">
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <div class="view-toggle">
+                            <button class="view-btn active" id="btnListView"><i class="fa-solid fa-list"></i> List</button>
+                            <button class="view-btn" id="btnBoardView"><i class="fa-solid fa-border-all"></i> Board</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="taskContainer"></div>
+            </div>
+        </div>
+
+        <!-- VIEW: ANALYTICS -->
+        <div id="view-analytics" class="content-view hidden-view">
+            <div class="card-container glass" style="margin-bottom: 25px;">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-brain"></i> Strategic Insights</span>
+                </div>
+                <div id="analytics-ai-content" style="padding: 10px 0;">
+                    <p style="color: var(--text-muted);">Calculating your performance metrics and identifying bottlenecks...</p>
+                </div>
+            </div>
+            <div class="dashboard-grid" id="analytics-stats"></div>
+            <div class="middle-section" id="analytics-charts"></div>
+        </div>
+
+        <!-- VIEW: CALENDAR -->
+        <div id="view-calendar" class="content-view hidden-view">
+            <div class="card-container glass">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-calendar-days"></i> Task Calendar</span>
+                    <div class="calendar-controls">
+                        <button class="icon-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                        <h3 id="calendarMonth">Month Year</h3>
+                        <button class="icon-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div id="calendarContainer" class="calendar-grid"></div>
+            </div>
+        </div>
+
+        <!-- VIEW: AI LAB -->
+        <div id="view-ailab" class="content-view hidden-view">
+            <div class="card-container glass" style="margin-bottom: 25px;">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-robot"></i> AI Academic Tools</span>
+                    <p style="font-size: 12px; color: var(--text-muted); font-weight: 400;">Powered by SmartDesk AI Intelligence</p>
+                </div>
+                <div id="summarizer-container"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Task</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <input type="hidden" id="editTaskId">
+                <label>Task Title</label>
+                <input id="editTitle" type="text">
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>Deadline</label>
+                <input id="editDeadline" type="date">
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>Priority</label>
+                <select id="editPriority">
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Category</label>
+                <select id="editCategory">
+                    <option value="Homework">Homework</option>
+                    <option value="Exams">Exams</option>
+                    <option value="Project">Project</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <button class="btn-primary" style="width: 100%;">
+                Save Changes
+            </button>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL (ADVANCED SETTINGS) -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content glass" style="max-width: 800px; padding: 0; overflow: hidden;">
+            <div class="modal-header" style="padding: 25px 30px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h2 style="font-size: 24px; font-weight: 800;"><i class="fa-solid fa-user-gear"></i> Account Settings</h2>
+                <button class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="settings-layout">
+                <!-- Settings Sidebar -->
+                <div class="settings-sidebar" style="padding: 30px 20px; background: rgba(255,255,255,0.02); border-right: 1px solid rgba(255,255,255,0.05);">
+                    <div class="settings-nav-item active" onclick="switchSettingsTab('account', this)">
+                        <i class="fa-solid fa-user"></i> Account
+                    </div>
+                    <div class="settings-nav-item" onclick="switchSettingsTab('appearance', this)">
+                        <i class="fa-solid fa-palette"></i> Appearance
+                    </div>
+                    <div class="settings-nav-item" onclick="switchSettingsTab('security', this)">
+                        <i class="fa-solid fa-shield-halved"></i> Security
+                    </div>
+                </div>
+
+                <!-- Settings Content -->
+                <div class="settings-content" style="padding: 30px;">
+                    
+                    <!-- Account Section -->
+                    <div id="settings-account" class="settings-section active">
+                        <h3 style="margin-bottom: 20px;">Profile Information</h3>
+                        <div class="input-group" style="margin-bottom: 15px;">
+                            <label>Display Name</label>
+                            <input id="profileName" type="text" placeholder="Your Name">
+                        </div>
+                        <div class="input-group">
+                            <label>Email Address</label>
+                            <input id="profileEmail" type="email" disabled style="opacity: 0.6; cursor: not-allowed;">
+                            <small style="color: var(--text-muted);">Email cannot be changed.</small>
+                        </div>
+                        
+                        <h4 style="margin: 25px 0 15px;">Choose Avatar</h4>
+                        <div class="avatar-grid">
+                            <img src="https://i.pravatar.cc/150?u=1" class="avatar-option selected" onclick="selectAvatar(this)">
+                            <img src="https://i.pravatar.cc/150?u=2" class="avatar-option" onclick="selectAvatar(this)">
+                            <img src="https://i.pravatar.cc/150?u=3" class="avatar-option" onclick="selectAvatar(this)">
+                            <img src="https://i.pravatar.cc/150?u=4" class="avatar-option" onclick="selectAvatar(this)">
+                            <img src="https://i.pravatar.cc/150?u=5" class="avatar-option" onclick="selectAvatar(this)">
+                        </div>
+                    </div>
+
+                    <!-- Appearance Section -->
+                    <div id="settings-appearance" class="settings-section">
+                        <h3 style="margin-bottom: 20px;">Interface Customization</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 20px;">Personalize your workspace colors and theme.</p>
+                        
+                        <div class="theme-preview-grid">
+                            <div class="theme-preview-item" id="theme-indigo-prev" onclick="changeTheme('indigo'); updateThemePreview('indigo')">
+                                <div style="height: 40px; background: #6366f1; border-radius: 8px; margin-bottom: 10px;"></div>
+                                <span style="font-size: 14px; font-weight: 600;">Indigo</span>
+                            </div>
+                            <div class="theme-preview-item" id="theme-emerald-prev" onclick="changeTheme('emerald'); updateThemePreview('emerald')">
+                                <div style="height: 40px; background: #10b981; border-radius: 8px; margin-bottom: 10px;"></div>
+                                <span style="font-size: 14px; font-weight: 600;">Emerald</span>
+                            </div>
+                            <div class="theme-preview-item" id="theme-rose-prev" onclick="changeTheme('rose'); updateThemePreview('rose')">
+                                <div style="height: 40px; background: #f43f5e; border-radius: 8px; margin-bottom: 10px;"></div>
+                                <span style="font-size: 14px; font-weight: 600;">Rose</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="margin-bottom: 4px;">Theme Mode</h4>
+                                <p style="font-size: 12px; color: var(--text-muted);">Switch between light and dark interface.</p>
+                            </div>
+                            <button class="btn-outline">Toggle Theme</button>
+                        </div>
+                    </div>
+
+                    <!-- Security Section -->
+                    <div id="settings-security" class="settings-section">
+                        <h3 style="margin-bottom: 20px;">Security & Access</h3>
+                        <div class="input-group" style="margin-bottom: 15px;">
+                            <label>Current Password</label>
+                            <input type="password" placeholder="••••••••">
+                        </div>
+                        <div class="input-group">
+                            <label>New Password</label>
+                            <input type="password" placeholder="••••••••">
+                        </div>
+                        <button class="btn-outline" style="width: 100%; margin-top: 20px;">Update Password</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer" style="padding: 20px 30px; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: flex-end; gap: 15px;">
+                <button class="btn-outline">Cancel</button>
+                <button class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI CHATBOT -->
+    <button class="ai-fab" id="ai-fab" title="AI Assistant">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+    </button>
+    <div class="ai-chat-window glass" id="ai-chatbot-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="env.js"></script>
+    <script type="module" src="src/main.js"></script>
+
+</body>
+
+</html>

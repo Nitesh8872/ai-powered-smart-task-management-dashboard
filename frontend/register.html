@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDesk - Join Now</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Global Style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="auth-page">
+
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div id="toast-container"></div>
+
+    <div class="auth-card" style="width: 500px;">
+        <div class="auth-brand">
+            <i class="fa-solid fa-cube"></i>
+            <span>SmartDesk</span>
+        </div>
+
+        <h2>Create Account</h2>
+        <p>Start organizing your student life with power.</p>
+
+        <div class="auth-form">
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Full Name</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-user" style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
+                    <input type="text" id="name" placeholder="John Doe" style="padding-left: 50px; width: 100%;"
+                        onkeypress="handleRegisterEnter(event)">
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Email Address</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-envelope"
+                        style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
+                    <input type="email" id="email" placeholder="john@university.edu"
+                        style="padding-left: 50px; width: 100%;" onkeypress="handleRegisterEnter(event)">
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>Password</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-lock" style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
+                    <input type="password" id="password" placeholder="••••••••" style="padding-left: 50px; width: 100%;"
+                        oninput="checkStrength()" onkeypress="handleRegisterEnter(event)">
+                    <i class="fa-solid fa-eye"
+                        style="position: absolute; right: 18px; top: 18px; cursor: pointer; color: #94a3b8;"
+                        onclick="togglePassword('password', this)"></i>
+                </div>
+                <div class="password-strength" id="strengthContainer"
+                    style="display: none; height: 4px; gap: 4px; margin-top: 10px;">
+                    <div class="strength-bar" id="bar1"
+                        style="flex: 1; height: 100%; border-radius: 2px; background: #e2e8f0;"></div>
+                    <div class="strength-bar" id="bar2"
+                        style="flex: 1; height: 100%; border-radius: 2px; background: #e2e8f0;"></div>
+                    <div class="strength-bar" id="bar3"
+                        style="flex: 1; height: 100%; border-radius: 2px; background: #e2e8f0;"></div>
+                </div>
+                <small id="strengthText" style="font-size: 11px; margin-top: 6px; display: block;"></small>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 30px;">
+                <label>Confirm Password</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-lock" style="position: absolute; left: 18px; top: 18px; color: #94a3b8;"></i>
+                    <input type="password" id="confirmPassword" placeholder="••••••••"
+                        style="padding-left: 50px; width: 100%;" onkeypress="handleRegisterEnter(event)">
+                </div>
+            </div>
+
+            <button class="btn-primary" id="registerBtn"
+                style="width: 100%; padding: 16px; font-size: 15px; font-weight: 800; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);">
+                Create Account
+            </button>
+        </div>
+
+        <div class="auth-footer">
+            Already have an account? <a href="login.html">Sign in</a>
+        </div>
+    </div>
+
+    <script src="env.js"></script>
+    <script type="module">
+        import { register } from './src/auth.js';
+
+        document.getElementById('registerBtn').addEventListener('click', register);
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') register();
+            });
+        });
+
+        window.togglePassword = function (id, icon) {
+            const input = document.getElementById(id);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        };
+
+        const passInput = document.getElementById('password');
+        if (passInput) {
+            passInput.addEventListener('input', checkStrength);
+        }
+
+        function checkStrength() {
+            const password = document.getElementById('password').value;
+            const container = document.getElementById('strengthContainer');
+            const text = document.getElementById('strengthText');
+            const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3')];
+
+            if (!password) {
+                container.style.display = 'none';
+                text.innerText = '';
+                return;
+            }
+
+            container.style.display = 'flex';
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.match(/[A-Z]/) && password.match(/[0-9]/)) strength++;
+            if (password.match(/[^A-Za-z0-9]/)) strength++;
+
+            bars.forEach(bar => bar.style.background = '#e2e8f0');
+
+            if (strength === 1) {
+                bars[0].style.background = '#ef4444';
+                text.innerText = 'Weak password';
+                text.style.color = '#ef4444';
+            } else if (strength === 2) {
+                bars[0].style.background = '#f59e0b';
+                bars[1].style.background = '#f59e0b';
+                text.innerText = 'Getting better...';
+                text.style.color = '#f59e0b';
+            } else if (strength === 3) {
+                bars.forEach(bar => bar.style.background = '#22c55e');
+                text.innerText = 'Strong password';
+                text.style.color = '#22c55e';
+            }
+        }
+    </script>
+</body>
+
+</html>
