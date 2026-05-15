@@ -18,7 +18,8 @@ const generateTokens = (user) => {
 };
 
 const register = async (userData) => {
-    const { name, email, password } = userData;
+    const { name, password } = userData;
+    const email = userData.email.toLowerCase().trim();
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -37,7 +38,8 @@ const register = async (userData) => {
 };
 
 const login = async (email, password) => {
-    const user = await User.findOne({ email });
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
         throw new ErrorResponse("Invalid credentials", 401);
     }

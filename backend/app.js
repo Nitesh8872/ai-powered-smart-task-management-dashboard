@@ -64,6 +64,19 @@ app.get("/health", (req, res) => {
     });
 });
 
+app.get("/health/config", (req, res) => {
+    res.status(200).json({
+        success: true,
+        environment: process.env.NODE_ENV || "development",
+        required: {
+            mongoUri: Boolean(process.env.MONGO_URI),
+            jwtSecret: Boolean(process.env.JWT_SECRET),
+            refreshSecret: Boolean(process.env.REFRESH_SECRET),
+            corsOrigin: Boolean(process.env.CORS_ORIGIN)
+        }
+    });
+});
+
 app.use("/api", routes);
 
 app.use(errorHandler);
