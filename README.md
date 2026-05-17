@@ -12,9 +12,9 @@ Use **only Render** for production. The server hosts the frontend and API on the
 
 | What | URL |
 |------|-----|
-| App (login) | `https://YOUR-SERVICE.onrender.com/login.html` |
-| Register | `https://YOUR-SERVICE.onrender.com/register.html` |
-| API | `https://YOUR-SERVICE.onrender.com/api` |
+| App (login) | `https://smart-task-dashboard-api.onrender.com/login.html` |
+| Register | `https://smart-task-dashboard-api.onrender.com/register.html` |
+| API | `https://smart-task-dashboard-api.onrender.com/api` |
 
 ### Deploy steps (do once)
 
