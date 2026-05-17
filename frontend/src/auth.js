@@ -79,6 +79,11 @@ function setButtonLoading(button, isLoading, text) {
 
 function getErrorMessage(data, status, fallback) {
     const message = data?.message || data?.error || data?.errors?.[0]?.msg || fallback;
+
+    if (status === 403 && /cors origin not allowed/i.test(message)) {
+        return "Backend CORS blocked this site. Push the latest code to Render and redeploy, then hard-refresh (Ctrl+Shift+R).";
+    }
+
     return status ? `${message} (Status ${status})` : message;
 }
 

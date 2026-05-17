@@ -37,9 +37,18 @@ async function parseJson(res) {
         return await res.json();
     } catch {
         return {
-            message: res.ok
-                ? "Request completed"
-                : "Server did not return a valid JSON response"
+            message: res.ok ? "Request completed" : getHttpErrorMessage(res.status),
+            error: getHttpErrorMessage(res.status)
         };
     }
+}
+
+function getHttpErrorMessage(status) {
+    if (status === 403) {
+        return "Access denied (403). Redeploy the backend on Render, then hard-refresh this page.";
+    }
+    if (status === 0) {
+        return "Cannot reach the API. Check that the backend is running.";
+    }
+    return "Server did not return a valid JSON response";
 }
