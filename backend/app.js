@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -7,10 +8,12 @@ const routes = require("./routes");
 const { corsOptions, allowedOrigins, isProduction } = require("./config/cors");
 
 const app = express();
+const frontendPath = path.join(__dirname, "..", "frontend");
 
 app.use(
     helmet({
-        crossOriginResourcePolicy: { policy: "cross-origin" }
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+        contentSecurityPolicy: false
     })
 );
 
@@ -26,13 +29,6 @@ app.use("/api/", apiLimiter);
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "10kb" }));
 
-app.get("/", (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "AI-Powered Smart Task Management Dashboard API is running"
-    });
-});
-
 app.get("/health", (req, res) => {
     res.status(200).json({
         success: true,
@@ -46,8 +42,11 @@ app.get("/health/config", (req, res) => {
         success: true,
         environment: process.env.NODE_ENV || "development",
         cors: {
-            allowedOrigins,
-            trustVercel: isProduction && process.env.CORS_TRUST_VERCEL !== "false"
+            mode: isProduction && process.env.STRICT_CORS !== "true" ? "open" : "restricted",
+            allowedOrigins
+        },
+        frontend: {
+            servedFromApi: require("fs").existsSync(frontendPath)
         },
         required: {
             mongoUri: Boolean(process.env.MONGO_URI),
@@ -58,6 +57,13 @@ app.get("/health/config", (req, res) => {
 });
 
 app.use("/api", routes);
+
+app.use(express.static(frontendPath));
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
+});
+
 app.use(errorHandler);
 
 module.exports = app;

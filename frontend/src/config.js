@@ -1,33 +1,24 @@
 const localApiBaseUrl = "http://localhost:5000/api";
-const productionApiBaseUrl = "/api";
-const renderApiBaseUrl = "https://smart-task-dashboard-api.onrender.com/api";
 
 function isLocalDevHost(hostname) {
     return hostname === "localhost" || hostname === "127.0.0.1";
 }
 
-function isVercelHost(hostname) {
-    return hostname.endsWith(".vercel.app") || hostname === "vercel.app";
-}
-
-function isGitHubPagesHost(hostname) {
-    return hostname.endsWith(".github.io");
-}
-
+/**
+ * Same-origin /api whenever the page is served by our Express app (Render)
+ * or by Vercel (vercel.json proxy). Only Live Server uses localhost:5000.
+ */
 function resolveApiBaseUrl() {
-    const { hostname, protocol } = window.location;
+    const { hostname, protocol, port } = window.location;
 
-    // Vercel: same-origin /api proxy (see vercel.json)
-    if (isVercelHost(hostname)) {
-        return productionApiBaseUrl;
-    }
+    const isLiveServer =
+        isLocalDevHost(hostname) &&
+        port &&
+        port !== "5000";
 
-    // GitHub Pages: no /api proxy — call Render directly
-    if (isGitHubPagesHost(hostname)) {
-        return window.APP_CONFIG?.API_BASE_URL || renderApiBaseUrl;
-    }
+    const isFileOpen = protocol === "file:";
 
-    if (isLocalDevHost(hostname) || protocol === "file:") {
+    if (isFileOpen || isLiveServer) {
         return (
             window.APP_CONFIG?.API_BASE_URL ||
             localStorage.getItem("API_BASE_URL") ||
@@ -35,7 +26,8 @@ function resolveApiBaseUrl() {
         );
     }
 
-    return window.APP_CONFIG?.API_BASE_URL || productionApiBaseUrl;
+    // Render, Vercel, or any host serving /api on the same domain
+    return "/api";
 }
 
 export const API_BASE_URL = resolveApiBaseUrl().replace(/\/$/, "");
@@ -43,4 +35,13 @@ export const API_BASE_URL = resolveApiBaseUrl().replace(/\/$/, "");
 export function apiUrl(path) {
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;
     return `${API_BASE_URL}${normalizedPath}`;
+}
+
+// Stale test overrides break production login — remove them outside local dev
+if (
+    !isLocalDevHost(window.location.hostname) &&
+    window.location.protocol !== "file:" &&
+    localStorage.getItem("API_BASE_URL")
+) {
+    localStorage.removeItem("API_BASE_URL");
 }

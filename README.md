@@ -2,7 +2,41 @@
 
 A full-stack student task dashboard with authentication, task management, analytics, calendar views, and AI-assisted productivity tools.
 
-**Live stack:** static frontend (Vercel or GitHub Pages) + Node.js API on Render + MongoDB Atlas.
+**Recommended live setup:** one Render URL serves **both** the website and the API (no CORS issues).
+
+---
+
+## One live link (fix login/register permanently)
+
+Use **only Render** for production. The server hosts the frontend and API on the **same domain**.
+
+| What | URL |
+|------|-----|
+| App (login) | `https://YOUR-SERVICE.onrender.com/login.html` |
+| Register | `https://YOUR-SERVICE.onrender.com/register.html` |
+| API | `https://YOUR-SERVICE.onrender.com/api` |
+
+### Deploy steps (do once)
+
+1. Push this repo to GitHub.
+2. [Render](https://render.com) → **New Web Service** → connect repo.
+3. **Root Directory:** leave empty or `.` (not `backend` only).
+4. **Build Command:** `cd backend && npm ci --omit=dev`
+5. **Start Command:** `cd backend && npm start`
+6. Environment variables:
+
+   | Key | Value |
+   |-----|--------|
+   | `NODE_ENV` | `production` |
+   | `MONGO_URI` | Your MongoDB Atlas connection string |
+   | `JWT_SECRET` | Long random string |
+   | `REFRESH_SECRET` | Different long random string |
+
+7. Deploy. Open `https://YOUR-SERVICE.onrender.com/login.html` and register.
+
+**MongoDB Atlas:** Network Access → **Allow access from anywhere** (`0.0.0.0/0`) so Render can connect.
+
+CORS is **open in production** by default so Vercel/GitHub still work. Login on Render does not depend on CORS at all.
 
 ---
 
@@ -26,7 +60,7 @@ A full-stack student task dashboard with authentication, task management, analyt
 | Database | MongoDB (Mongoose) |
 | Auth | JWT + bcrypt, refresh token rotation |
 | Security | Helmet, CORS, rate limiting, express-validator |
-| Deploy | Vercel (frontend), Render (API), optional GitHub Pages |
+| Deploy | Render (app + API, recommended), optional Vercel/GitHub Pages |
 
 ---
 

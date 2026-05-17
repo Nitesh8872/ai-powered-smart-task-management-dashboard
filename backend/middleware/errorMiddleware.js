@@ -33,11 +33,15 @@ const errorHandler = (err, req, res, next) => {
     const statusCode = error.statusCode || 500;
     const isProduction = process.env.NODE_ENV === "production";
 
+    const clientMessage =
+        statusCode === 500 && isProduction
+            ? "Server Error"
+            : error.message || "Server Error";
+
     res.status(statusCode).json({
         success: false,
-        error: statusCode === 500 && isProduction
-            ? "Server Error"
-            : error.message || "Server Error",
+        error: clientMessage,
+        message: clientMessage
     });
 };
 

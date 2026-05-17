@@ -9,7 +9,6 @@ const defaultDevOrigins = [
     "http://127.0.0.1:5500"
 ];
 
-/** Browser Origin headers never include a trailing slash; normalize env values to match. */
 function normalizeOrigin(value) {
     const trimmed = String(value).trim();
     if (!trimmed) return "";
@@ -24,7 +23,7 @@ function normalizeOrigin(value) {
 }
 
 const corsOriginConfig =
-    process.env.CORS_ORIGIN || (isProduction ? "*.vercel.app" : defaultDevOrigins.join(","));
+    process.env.CORS_ORIGIN || (isProduction ? "*" : defaultDevOrigins.join(","));
 
 const allowedOrigins = corsOriginConfig
     .split(",")
@@ -49,24 +48,6 @@ function isLocalDevOrigin(origin) {
     }
 }
 
-function isVercelHostname(hostname) {
-    return hostname === "vercel.app" || hostname.endsWith(".vercel.app");
-}
-
-function isGitHubPagesHostname(hostname) {
-    return hostname.endsWith(".github.io");
-}
-
-function matchesConfiguredWildcard(hostname) {
-    return allowedOrigins.some((allowed) => {
-        if (!allowed.startsWith("*.")) {
-            return false;
-        }
-        const domain = allowed.slice(2);
-        return hostname === domain || hostname.endsWith(`.${domain}`);
-    });
-}
-
 function isOriginAllowed(origin) {
     if (!origin) {
         return true;
@@ -76,36 +57,12 @@ function isOriginAllowed(origin) {
         return true;
     }
 
-    const normalizedOrigin = normalizeOrigin(origin);
-
-    if (allowedOrigins.includes(normalizedOrigin)) {
+    // Production: allow every browser origin (fixes Vercel/GitHub URL changes forever)
+    if (isProduction && process.env.STRICT_CORS !== "true") {
         return true;
     }
 
-    try {
-        const { hostname, protocol } = new URL(normalizedOrigin);
-        if (protocol !== "http:" && protocol !== "https:") {
-            return false;
-        }
-
-        if (matchesConfiguredWildcard(hostname)) {
-            return true;
-        }
-
-        // Vercel gives each deploy its own URL; allow all *.vercel.app in production
-        if (isProduction && process.env.CORS_TRUST_VERCEL !== "false" && isVercelHostname(hostname)) {
-            return true;
-        }
-
-        // GitHub Pages: https://username.github.io/repo-name/
-        if (isProduction && process.env.CORS_TRUST_GITHUB_PAGES !== "false" && isGitHubPagesHostname(hostname)) {
-            return true;
-        }
-    } catch {
-        return false;
-    }
-
-    return false;
+    return allowedOrigins.includes(normalizeOrigin(origin));
 }
 
 const corsOptions = {

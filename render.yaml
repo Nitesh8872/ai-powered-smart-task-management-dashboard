@@ -2,10 +2,10 @@ services:
   - type: web
     name: smart-task-dashboard-api
     runtime: node
-    rootDir: backend
+    rootDir: .
     plan: free
-    buildCommand: npm ci --omit=dev
-    startCommand: npm start
+    buildCommand: cd backend && npm ci --omit=dev
+    startCommand: cd backend && npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -18,5 +18,3 @@ services:
         generateValue: true
       - key: REFRESH_SECRET
         generateValue: true
-      - key: CORS_ORIGIN
-        value: "*.vercel.app,http://localhost:5500,http://127.0.0.1:5500"
